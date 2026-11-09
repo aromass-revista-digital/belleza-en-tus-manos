@@ -1,0 +1,27 @@
+{
+  "id": "/",
+  "name": "Belleza en tus Manos",
+  "short_name": "BellezaManos",
+  "description": "Distribuidora digital independiente de cosmética, perfumería y bienestar (Natura y AVON). Catálogo inteligente, comisiones y pedidos.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#FDFBF7",
+  "theme_color": "#E8C5C8",
+  "categories": ["shopping", "lifestyle", "business"],
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ]
+}

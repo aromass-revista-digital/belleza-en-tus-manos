@@ -1,0 +1,19 @@
+# Robots.txt - Belleza en tus Manos
+# Distribuidora Digital Independiente de Cosmética y Perfumería
+User-agent: *
+Allow: /
+Allow: /catalogo
+Allow: /revendedores
+Allow: /nosotros
+Allow: /capacitacion-info
+Allow: /preguntas-frecuentes
+
+# Disallow private user accounts, administration and sensitive order processing
+Disallow: /admin
+Disallow: /cuenta/
+Disallow: /pedidos/
+Disallow: /comprobantes/
+Disallow: /api/
+
+# Sitemap location
+Sitemap: https://bellezaentusmanos.com.ar/sitemap.xml

@@ -1,0 +1,8 @@
+{
+  "name": "Belleza en tus Manos",
+  "description": "Distribuidora digital independiente de cosmética, perfumería y bienestar (Natura y AVON). Catálogo inteligente con IA, gestión de pedidos, revendedores y showroom 3D.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

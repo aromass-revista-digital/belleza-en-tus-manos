@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FBF4F2"/>
+      <stop offset="45%" stop-color="#F3DDD9"/>
+      <stop offset="100%" stop-color="#E8C5C8"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F3E5AB"/>
+      <stop offset="35%" stop-color="#D4AF37"/>
+      <stop offset="70%" stop-color="#C5A059"/>
+      <stop offset="100%" stop-color="#996515"/>
+    </linearGradient>
+    <linearGradient id="rose" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#EAA6AC"/>
+      <stop offset="50%" stop-color="#D97A85"/>
+      <stop offset="100%" stop-color="#B24F5C"/>
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="#7B3A44" flood-opacity="0.25"/>
+    </filter>
+  </defs>
+
+  <!-- Background with rounded squircle safe area -->
+  <rect width="512" height="512" rx="120" fill="url(#bg)"/>
+  <circle cx="256" cy="256" r="226" fill="none" stroke="url(#gold)" stroke-width="3" stroke-dasharray="10 6" opacity="0.6"/>
+
+  <g filter="url(#shadow)">
+    <!-- Central Perfume & Lotus / Hands Motif -->
+    <!-- Perfume Bottle Silhouette -->
+    <path d="M 230 110 L 282 110 L 282 135 L 230 135 Z" fill="url(#gold)"/>
+    <rect x="246" y="92" width="20" height="18" rx="4" fill="url(#gold)"/>
+    <!-- Bottle Body -->
+    <path d="M 210 145 C 210 135 220 135 230 135 L 282 135 C 292 135 302 135 302 145 L 324 220 C 328 235 324 250 315 258 C 300 270 212 270 197 258 C 188 250 184 235 188 220 Z" fill="url(#rose)" opacity="0.85"/>
+    <ellipse cx="256" cy="195" rx="36" ry="44" fill="#FFFFFF" opacity="0.3"/>
+    
+    <!-- Blooming Flower Petals -->
+    <path d="M 256 160 C 230 190 200 240 256 270 C 312 240 282 190 256 160 Z" fill="url(#rose)"/>
+    <path d="M 256 185 C 235 205 215 235 256 260 C 297 235 277 205 256 185 Z" fill="#FDFBF7" opacity="0.7"/>
+
+    <!-- Elegant Hands Cradling the Beauty -->
+    <!-- Left Hand -->
+    <path d="M 120 370 C 140 330 180 300 230 300 C 245 300 250 310 240 320 C 190 325 160 360 145 400 C 135 410 115 390 120 370 Z" fill="url(#gold)"/>
+    <!-- Right Hand -->
+    <path d="M 392 370 C 372 330 332 300 282 300 C 267 300 262 310 272 320 C 322 325 352 360 367 400 C 377 410 397 390 392 370 Z" fill="url(#gold)"/>
+    
+    <!-- Base Crescent Cradle -->
+    <path d="M 150 360 C 200 440 312 440 362 360 C 340 400 280 430 256 430 C 232 430 172 400 150 360 Z" fill="url(#gold)"/>
+
+    <!-- Sparkles -->
+    <path d="M 170 160 L 176 172 L 188 178 L 176 184 L 170 196 L 164 184 L 152 178 L 164 172 Z" fill="url(#gold)"/>
+    <path d="M 345 150 L 350 160 L 360 165 L 350 170 L 345 180 L 340 170 L 330 165 L 340 160 Z" fill="url(#gold)"/>
+    <path d="M 256 65 L 260 75 L 270 80 L 260 85 L 256 95 L 252 85 L 242 80 L 252 75 Z" fill="url(#gold)"/>
+  </g>
+
+  <!-- Typography Banner at bottom inside safe zone -->
+  <text x="256" y="465" font-family="'Playfair Display', serif, Arial" font-size="28" font-weight="700" fill="#4A3437" text-anchor="middle" letter-spacing="3">BELLEZA EN TUS MANOS</text>
+  <text x="256" y="490" font-family="'Montserrat', sans-serif, Arial" font-size="14" font-weight="600" fill="#C5A059" text-anchor="middle" letter-spacing="4">DISTRIBUIDORA DIGITAL</text>
+</svg>
