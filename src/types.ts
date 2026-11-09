@@ -262,3 +262,37 @@ export interface TrainingModule {
   quizOptions: string[];
   correctAnswer: number;
 }
+
+export interface NaturaImportProductItem {
+  code: string;
+  name: string;
+  presentation: string;
+  category: ProductCategory;
+  referencePrice: number;
+  officialPhotoUrl?: string;
+  discountPercent?: number;
+  isPromotion?: boolean;
+  uncertaintyReason?: string;
+  status: 'aprobado' | 'dudoso_revision' | 'excluido';
+}
+
+export interface NaturaImportRecord {
+  id: string; // e.g. NAT-IMP-2026-05
+  sourceType: 'enlace_privado' | 'archivo_pdf';
+  sourceReferencePrivate: string; // Private official Natura URL or PDF filename (STRICTLY PRIVATE TO ADMINS DIEGO & MARÍA)
+  extractedMagazineName: string; // e.g. "Revista Natura Cosméticos Argentina"
+  extractedCycleNumber: string; // e.g. "Ciclo 05/2026" (CRITICAL: extracted from magazine, NEVER invented)
+  cycleDetectionConfidence: 'alta' | 'requiere_confirmacion_admin';
+  validityStartDate: string;
+  validityEndDate: string;
+  importedAt: string;
+  importedByAdminId: 'ADMIN-DIEGO' | 'ADMIN-MARIA';
+  importedByAdminName: 'Diego' | 'María';
+  approvedAt?: string;
+  approvedByAdminId?: 'ADMIN-DIEGO' | 'ADMIN-MARIA';
+  status: 'borrador_revision' | 'aprobado' | 'publicado' | 'archivado';
+  productsCount: number;
+  extractedProducts: NaturaImportProductItem[];
+  adminNotes?: string;
+}
+

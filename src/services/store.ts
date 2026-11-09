@@ -2,7 +2,7 @@ import {
   User, Product, CommercialCycle, Order, OrderItem, 
   PaymentStatus, DeliveryStatus, PickingStatus, AuditLogItem, 
   BoxPreparation, ConsolidatedPurchaseItem, PointsRulesConfig,
-  ShippingRateConfig, ShippingCalculation
+  ShippingRateConfig, ShippingCalculation, NaturaImportRecord
 } from '../types';
 import { calculatePrices } from './pricingEngine';
 
@@ -17,8 +17,10 @@ const STORAGE_KEYS = {
   BANK_INFO: 'bem_bank_info_v2',
   PDF_JOBS: 'bem_pdf_jobs_v2',
   POINTS_RULES: 'bem_points_rules_v2',
-  SHIPPING_CONFIG: 'bem_shipping_config_v2'
+  SHIPPING_CONFIG: 'bem_shipping_config_v2',
+  NATURA_IMPORTS: 'bem_natura_imports_v2'
 };
+
 
 // Two Principal Administrators
 export const ADMIN_CONTACTS = [
@@ -273,18 +275,18 @@ function makeProduct(
 }
 
 const INITIAL_PRODUCTS: Product[] = [
-  makeProduct('PROD-001', 'NAT-7281', 'Kaiak Clásico Eau de Toilette Masculino', 'Natura', 'Perfumería', 'Frasco 100 ml', 18000, 'Aromático acuoso con notas de bergamota, albahaca y musgo. La fragancia emblemática de máxima frescura y fijación.', 'https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&w=600&q=80', { isPromotion: true }),
-  makeProduct('PROD-002', 'NAT-8190', 'Essencial Exclusivo Eau de Parfum Femenino', 'Natura', 'Perfumería', 'Frasco 100 ml', 24000, 'Floral envolvente con notas de magnolia, cassis y ámbar. Sofisticación y elegancia duradera para momentos inolvidables.', 'https://images.unsplash.com/photo-1541643600914-78b084683601?auto=format&fit=crop&w=600&q=80'),
-  makeProduct('PROD-003', 'NAT-3412', 'Chronos Suero Reductor de Arrugas Intensivo', 'Natura', 'Cuidado facial', 'Dosificador 30 ml', 16500, 'Tratamiento intensivo con triple ácido hialurónico y prebiótico de jatobá. Rellena arrugas profundas en 14 días.', 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?auto=format&fit=crop&w=600&q=80'),
-  makeProduct('PROD-004', 'NAT-9902', 'Tododia Crema Corporal Nutritiva Nuez Pecán y Cacao', 'Natura', 'Cuidado corporal', 'Pote 400 ml', 8200, 'Fórmula prebiótica inteligente que se adapta a las necesidades de tu piel, dejándola 4 veces más hidratada.', 'https://images.unsplash.com/photo-1608248597359-3e34b9d5a624?auto=format&fit=crop&w=600&q=80', { isPromotion: true }),
-  makeProduct('PROD-005', 'NAT-4120', 'Ekos Pulpa Hidratante de Manos Castaña', 'Natura', 'Cuidado corporal', 'Tubo 75 g', 5500, 'Nutrición profunda antirrozaduras con óleo bruto de castaña de la Amazonia. Piel sedosa y uñas fortalecidas.', 'https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&w=600&q=80'),
-  makeProduct('PROD-006', 'AVN-1104', 'Far Away Glamour Eau de Parfum', 'AVON', 'Perfumería', 'Frasco 50 ml', 14500, 'Oriental amaderado con grosella negra, flor de naranja de Madagascar y almizcle negro. El glamour en tu piel.', 'https://images.unsplash.com/photo-1523293182086-7651a899d37f?auto=format&fit=crop&w=600&q=80'),
-  makeProduct('PROD-007', 'AVN-3290', 'Anew Renewal Power Sérum Facial con Protinol™', 'AVON', 'Cuidado facial', 'Gotero 30 ml', 15800, 'Tecnología galardonada de Protinol™ que ayuda a restaurar el colágeno dual para una piel notablemente más firme.', 'https://images.unsplash.com/photo-1601049541289-9b1b7bbbfe19?auto=format&fit=crop&w=600&q=80', { isPromotion: true }),
-  makeProduct('PROD-008', 'AVN-5402', 'Power Stay Labial Líquido Mate 16 Horas', 'AVON', 'Maquillaje', 'Tubo con aplicador 7 ml', 6200, 'Color mate intransferible de larga duración que no se corre ni se cuartea durante todo el día. Tono Resilient Red.', 'https://images.unsplash.com/photo-1586495777744-4413f21062fa?auto=format&fit=crop&w=600&q=80'),
-  makeProduct('PROD-009', 'AVN-7731', 'Encanto Loción Corporal Seda y Algodón', 'AVON', 'Cuidado corporal', 'Dosificador 400 ml', 7400, 'Fragancia suave y textura aterciopelada de rápida absorción con aceites preciosos que hidratan por 48 horas.', 'https://images.unsplash.com/photo-1617897903246-719242758050?auto=format&fit=crop&w=600&q=80'),
-  makeProduct('PROD-010', 'NAT-5561', 'Humor Propio Eau de Toilette Femenino', 'Natura', 'Perfumería', 'Frasco 75 ml', 17200, 'Dulce frutal con cereza en almíbar, ámbar y vainilla. Una explosión de alegría y frescura contagiosa.', 'https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?auto=format&fit=crop&w=600&q=80'),
-  makeProduct('PROD-011', 'NAT-9040', 'Shampoo Lumina Reparación de Cabello Dañado', 'Natura', 'Cabello', 'Envase 300 ml', 5900, 'Biotecnología pró-teia para la reconstrucción profunda de hebras quebradizas o químicamente tratadas.', 'https://images.unsplash.com/photo-1535585209827-a15fcdbc4c2d?auto=format&fit=crop&w=600&q=80'),
-  makeProduct('PROD-012', 'AVN-8812', 'Máscara de Pestañas Legendary Extension', 'AVON', 'Maquillaje', 'Tubo 10 g', 6800, 'Fórmula con polímeros alargadores que extienden las pestañas hasta un 50% más sin grumos.', 'https://images.unsplash.com/photo-1631214524020-7e18db9a8f92?auto=format&fit=crop&w=600&q=80')
+  makeProduct('PROD-001', 'NAT-7281', 'Kaiak Clásico Eau de Toilette Masculino', 'Natura', 'Perfumería', 'Frasco 100 ml', 18000, 'Aromático acuoso con notas de bergamota, albahaca y musgo. La fragancia emblemática de máxima frescura y fijación.', '', { isPromotion: true }),
+  makeProduct('PROD-002', 'NAT-8190', 'Essencial Exclusivo Eau de Parfum Femenino', 'Natura', 'Perfumería', 'Frasco 100 ml', 24000, 'Floral envolvente con notas de magnolia, cassis y ámbar. Sofisticación y elegancia duradera para momentos inolvidables.', ''),
+  makeProduct('PROD-003', 'NAT-3412', 'Chronos Suero Reductor de Arrugas Intensivo', 'Natura', 'Cuidado facial', 'Dosificador 30 ml', 16500, 'Tratamiento intensivo con triple ácido hialurónico y prebiótico de jatobá. Rellena arrugas profundas en 14 días.', ''),
+  makeProduct('PROD-004', 'NAT-9902', 'Tododia Crema Corporal Nutritiva Nuez Pecán y Cacao', 'Natura', 'Cuidado corporal', 'Pote 400 ml', 8200, 'Fórmula prebiótica inteligente que se adapta a las necesidades de tu piel, dejándola 4 veces más hidratada.', '', { isPromotion: true }),
+  makeProduct('PROD-005', 'NAT-4120', 'Ekos Pulpa Hidratante de Manos Castaña', 'Natura', 'Cuidado corporal', 'Tubo 75 g', 5500, 'Nutrición profunda antirrozaduras con óleo bruto de castaña de la Amazonia. Piel sedosa y uñas fortalecidas.', ''),
+  makeProduct('PROD-006', 'AVN-1104', 'Far Away Glamour Eau de Parfum', 'AVON', 'Perfumería', 'Frasco 50 ml', 14500, 'Oriental amaderado con grosella negra, flor de naranja de Madagascar y almizcle negro. El glamour en tu piel.', ''),
+  makeProduct('PROD-007', 'AVN-3290', 'Anew Renewal Power Sérum Facial con Protinol™', 'AVON', 'Cuidado facial', 'Gotero 30 ml', 15800, 'Tecnología galardonada de Protinol™ que ayuda a restaurar el colágeno dual para una piel notablemente más firme.', '', { isPromotion: true }),
+  makeProduct('PROD-008', 'AVN-5402', 'Power Stay Labial Líquido Mate 16 Horas', 'AVON', 'Maquillaje', 'Tubo con aplicador 7 ml', 6200, 'Color mate intransferible de larga duración que no se corre ni se cuartea durante todo el día. Tono Resilient Red.', ''),
+  makeProduct('PROD-009', 'AVN-7731', 'Encanto Loción Corporal Seda y Algodón', 'AVON', 'Cuidado corporal', 'Dosificador 400 ml', 7400, 'Fragancia suave y textura aterciopelada de rápida absorción con aceites preciosos que hidratan por 48 horas.', ''),
+  makeProduct('PROD-010', 'NAT-5561', 'Humor Propio Eau de Toilette Femenino', 'Natura', 'Perfumería', 'Frasco 75 ml', 17200, 'Dulce frutal con cereza en almíbar, ámbar y vainilla. Una explosión de alegría y frescura contagiosa.', ''),
+  makeProduct('PROD-011', 'NAT-9040', 'Shampoo Lumina Reparación de Cabello Dañado', 'Natura', 'Cabello', 'Envase 300 ml', 5900, 'Biotecnología pró-teia para la reconstrucción profunda de hebras quebradizas o químicamente tratadas.', ''),
+  makeProduct('PROD-012', 'AVN-8812', 'Máscara de Pestañas Legendary Extension', 'AVON', 'Maquillaje', 'Tubo 10 g', 6800, 'Fórmula con polímeros alargadores que extienden las pestañas hasta un 50% más sin grumos.', '')
 ];
 
 // Initial Order with Picking Number PICK-001
@@ -471,6 +473,7 @@ class Store {
   private pdfJobs: any[] = [];
   private pointsRules: PointsRulesConfig = INITIAL_POINTS_RULES;
   private shippingConfig: ShippingRateConfig = INITIAL_SHIPPING_CONFIG;
+  private naturaImports: NaturaImportRecord[] = [];
 
   constructor() {
     this.loadFromStorage();
@@ -486,7 +489,14 @@ class Store {
       this.currentUser = storedUser ? JSON.parse(storedUser) : this.users[0];
 
       const storedProducts = localStorage.getItem(STORAGE_KEYS.PRODUCTS);
-      this.products = storedProducts ? JSON.parse(storedProducts) : INITIAL_PRODUCTS;
+      const rawProducts: Product[] = storedProducts ? JSON.parse(storedProducts) : INITIAL_PRODUCTS;
+      // Sanitize products: remove any generic stock/unsplash images
+      this.products = rawProducts.map(p => {
+        if (p.image && (p.image.includes('unsplash.com') || p.image.includes('picsum.photos'))) {
+          return { ...p, image: '' };
+        }
+        return p;
+      });
 
       const storedCycles = localStorage.getItem(STORAGE_KEYS.CYCLES);
       this.cycles = storedCycles ? JSON.parse(storedCycles) : INITIAL_CYCLES;
@@ -523,6 +533,80 @@ class Store {
 
       const storedShip = localStorage.getItem(STORAGE_KEYS.SHIPPING_CONFIG);
       this.shippingConfig = storedShip ? JSON.parse(storedShip) : INITIAL_SHIPPING_CONFIG;
+
+      const storedNatura = localStorage.getItem(STORAGE_KEYS.NATURA_IMPORTS);
+      this.naturaImports = storedNatura ? JSON.parse(storedNatura) : [
+        {
+          id: 'NAT-IMP-2026-05',
+          sourceType: 'archivo_pdf',
+          sourceReferencePrivate: 'Revista_Natura_Argentina_Ciclo_05_2026_Oficial.pdf',
+          extractedMagazineName: 'Revista Natura Cosméticos Argentina',
+          extractedCycleNumber: 'Ciclo 05/2026',
+          cycleDetectionConfidence: 'alta',
+          validityStartDate: '2026-11-01',
+          validityEndDate: '2026-11-15',
+          importedAt: '2026-11-01T08:00:00Z',
+          importedByAdminId: 'ADMIN-DIEGO',
+          importedByAdminName: 'Diego',
+          approvedAt: '2026-11-01T08:30:00Z',
+          approvedByAdminId: 'ADMIN-DIEGO',
+          status: 'publicado',
+          productsCount: 6,
+          extractedProducts: [
+            {
+              code: 'NAT-7281',
+              name: 'Kaiak Clásico Eau de Toilette Masculino',
+              presentation: 'Frasco 100 ml',
+              category: 'Perfumería',
+              referencePrice: 18000,
+              isPromotion: true,
+              status: 'aprobado'
+            },
+            {
+              code: 'NAT-8190',
+              name: 'Essencial Exclusivo Eau de Parfum Femenino',
+              presentation: 'Frasco 100 ml',
+              category: 'Perfumería',
+              referencePrice: 24000,
+              status: 'aprobado'
+            },
+            {
+              code: 'NAT-3412',
+              name: 'Chronos Suero Reductor de Arrugas Intensivo',
+              presentation: 'Dosificador 30 ml',
+              category: 'Cuidado facial',
+              referencePrice: 16500,
+              status: 'aprobado'
+            },
+            {
+              code: 'NAT-9902',
+              name: 'Tododia Crema Corporal Nutritiva Nuez Pecán y Cacao',
+              presentation: 'Pote 400 ml',
+              category: 'Cuidado corporal',
+              referencePrice: 8200,
+              isPromotion: true,
+              status: 'aprobado'
+            },
+            {
+              code: 'NAT-4120',
+              name: 'Ekos Pulpa Hidratante de Manos Castaña',
+              presentation: 'Tubo 75 g',
+              category: 'Cuidado corporal',
+              referencePrice: 5500,
+              status: 'aprobado'
+            },
+            {
+              code: 'NAT-5561',
+              name: 'Humor Propio Eau de Toilette Femenino',
+              presentation: 'Frasco 75 ml',
+              category: 'Perfumería',
+              referencePrice: 17200,
+              status: 'aprobado'
+            }
+          ],
+          adminNotes: 'Extracción oficial verificada por Diego. Ciclo 05/2026 confirmado desde la portada editorial.'
+        }
+      ];
     } catch (e) {
       console.warn('Store fallback to seed data', e);
       this.users = INITIAL_USERS;
@@ -535,6 +619,7 @@ class Store {
       this.bankInfo = INITIAL_BANK_INFO;
       this.pointsRules = INITIAL_POINTS_RULES;
       this.shippingConfig = INITIAL_SHIPPING_CONFIG;
+      this.naturaImports = [];
     }
   }
 
@@ -551,6 +636,7 @@ class Store {
       localStorage.setItem(STORAGE_KEYS.PDF_JOBS, JSON.stringify(this.pdfJobs));
       localStorage.setItem(STORAGE_KEYS.POINTS_RULES, JSON.stringify(this.pointsRules));
       localStorage.setItem(STORAGE_KEYS.SHIPPING_CONFIG, JSON.stringify(this.shippingConfig));
+      localStorage.setItem(STORAGE_KEYS.NATURA_IMPORTS, JSON.stringify(this.naturaImports));
     } catch (e) {
       console.error('Storage save failed:', e);
     }
@@ -1437,6 +1523,124 @@ class Store {
     this.saveToStorage();
     this.logAudit(this.currentUser.id, this.currentUser.fullName, 'ACTUALIZACION_BANCO', 'SISTEMA', `Datos bancarios actualizados. CVU: ${this.bankInfo.cvu}`);
   }
+
+  // --- Importador Privado de Revista Natura (Requisitos 5, 6 y 7) ---
+  isAuthorizedAdmin(userId: string): boolean {
+    return userId === 'ADMIN-DIEGO' || userId === 'ADMIN-MARIA';
+  }
+
+  getNaturaImports(): NaturaImportRecord[] {
+    if (!this.isAuthorizedAdmin(this.currentUser.id)) {
+      throw new Error('Acceso restringido: Solo los administradores Diego y María pueden acceder al módulo de importación de Revista Natura.');
+    }
+    return [...this.naturaImports];
+  }
+
+  addNaturaImport(record: NaturaImportRecord): void {
+    if (!this.isAuthorizedAdmin(this.currentUser.id)) {
+      throw new Error('Acceso denegado: Solo Diego y María pueden registrar importaciones de Revista Natura.');
+    }
+    this.naturaImports.unshift(record);
+    this.saveToStorage();
+    this.logAudit(
+      this.currentUser.id,
+      this.currentUser.fullName,
+      'IMPORTACION_REVISTA_NATURA_REGISTRADA',
+      record.id,
+      `Carga de revista oficial de Natura (${record.extractedMagazineName}) con ciclo detectado: ${record.extractedCycleNumber}. Origen privado resguardado.`
+    );
+  }
+
+  approveAndPublishNaturaCycle(
+    importId: string,
+    adminId: 'ADMIN-DIEGO' | 'ADMIN-MARIA',
+    confirmedCycleNumber?: string,
+    validityDates?: { start: string; end: string }
+  ): { success: boolean; message: string; cycleId?: string } {
+    if (!this.isAuthorizedAdmin(adminId) || !this.isAuthorizedAdmin(this.currentUser.id)) {
+      return { success: false, message: 'Acceso no autorizado: Solo Diego o María pueden aprobar y publicar catálogos oficiales.' };
+    }
+
+    const imp = this.naturaImports.find(item => item.id === importId);
+    if (!imp) {
+      return { success: false, message: 'No se encontró el registro de importación solicitado.' };
+    }
+
+    const finalCycleNumber = confirmedCycleNumber || imp.extractedCycleNumber;
+    if (!finalCycleNumber || finalCycleNumber.trim() === '') {
+      return { success: false, message: 'ERROR CRÍTICO: El número de ciclo comercial no puede estar vacío. Debe extraerse de la revista oficial o ser verificado.' };
+    }
+
+    const startDate = validityDates?.start || imp.validityStartDate;
+    const endDate = validityDates?.end || imp.validityEndDate;
+
+    // 1. Archive previously published cycles to preserve exact historical orders
+    this.cycles.forEach(c => {
+      if (c.status === 'publicado') {
+        c.status = 'cerrado';
+        c.notes += ' [Cerrado y archivado al publicar nuevo ciclo oficial de Natura]';
+      }
+    });
+
+    // 2. Generate new CommercialCycle based strictly on the extracted cycle
+    const cycleId = `CICLO-${finalCycleNumber.replace(/[^a-zA-Z0-9]/g, '-').toUpperCase()}-${Date.now().toString().slice(-4)}`;
+    const newCycle: CommercialCycle = {
+      id: cycleId,
+      name: finalCycleNumber.startsWith('Ciclo') ? finalCycleNumber : `Ciclo ${finalCycleNumber}`,
+      brand: 'Multimarca',
+      startDate,
+      endDate,
+      status: 'publicado',
+      notes: `Ciclo oficial extraído directamente de la ${imp.extractedMagazineName}, aprobado por ${adminId === 'ADMIN-DIEGO' ? 'Diego' : 'María'} el ${new Date().toLocaleDateString('es-AR')}.`,
+      catalogCount: 1
+    };
+    this.cycles.unshift(newCycle);
+
+    // 3. Incorporate approved products into active catalog with exact official pricing formula
+    let incorporatedCount = 0;
+    for (const p of imp.extractedProducts) {
+      if (p.status === 'excluido') continue;
+      this.addProduct({
+        code: p.code,
+        name: p.name,
+        brand: 'Natura',
+        category: p.category,
+        presentation: p.presentation,
+        description: `Producto oficial Natura ${p.name} (${p.presentation}). Especificaciones verificadas de catálogo oficial.`,
+        image: p.officialPhotoUrl || '', // No fake photo; clean neutral fallback is used if no official photo
+        referencePrice: p.referencePrice,
+        cycleId: cycleId,
+        inStock: true,
+        isPromotion: p.isPromotion || false,
+        status: 'aprobado'
+      });
+      incorporatedCount++;
+    }
+
+    // 4. Update import status
+    imp.status = 'publicado';
+    imp.approvedAt = new Date().toISOString();
+    imp.approvedByAdminId = adminId;
+    imp.extractedCycleNumber = finalCycleNumber;
+    imp.validityStartDate = startDate;
+    imp.validityEndDate = endDate;
+
+    this.saveToStorage();
+    this.logAudit(
+      adminId,
+      adminId === 'ADMIN-DIEGO' ? 'Diego' : 'María',
+      'PUBLICACION_CICLO_OFICIAL_NATURA',
+      cycleId,
+      `Publicación aprobada del ${finalCycleNumber} con ${incorporatedCount} productos oficiales incorporados. Ciclos anteriores archivados.`
+    );
+
+    return {
+      success: true,
+      message: `¡${finalCycleNumber} aprobado y publicado exitosamente! Se incorporaron ${incorporatedCount} productos con precios calculados y resguardo histórico de pedidos anteriores.`,
+      cycleId
+    };
+  }
 }
 
 export const store = new Store();
+

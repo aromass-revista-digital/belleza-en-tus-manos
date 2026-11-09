@@ -101,15 +101,15 @@ function render2DApp() {
         </nav>
 
         <!-- Right Quick Actions -->
-        <div style="display: flex; align-items: center; gap: 0.5rem;">
-          <!-- 3D Showroom Button -->
-          <button class="btn btn-gold" id="btn-toggle-3d" style="font-size: 0.78rem; padding: 0.4rem 0.8rem;" title="Explorar frascos y texturas en 3D">
-            ${ICONS.sparkles} <span class="hide-mobile">Showroom</span> 3D
+        <div class="bem-header-actions">
+          <!-- Install PWA Button (Visible unless already standalone) -->
+          <button class="btn btn-gold" id="btn-header-install" style="font-size: 0.76rem; padding: 0.38rem 0.7rem; display: ${isPwaInstallable() ? 'inline-flex' : 'none'};" title="Instalar Aplicación en tu dispositivo">
+            ${ICONS.download} <span class="hide-on-320">Instalar</span>
           </button>
 
-          <!-- Install PWA Button -->
-          <button class="btn btn-outline" id="btn-header-install" style="font-size: 0.78rem; padding: 0.4rem 0.75rem; display: ${isPwaInstallable() ? 'inline-flex' : 'none'};">
-            ${ICONS.download} <span class="hide-mobile">Instalar PWA</span>
+          <!-- 3D Showroom Button -->
+          <button class="btn btn-outline" id="btn-toggle-3d" style="font-size: 0.76rem; padding: 0.38rem 0.65rem;" title="Explorar showroom 3D">
+            ${ICONS.sparkles} <span class="hide-mobile">3D</span>
           </button>
 
           <!-- Share App Button -->
@@ -143,12 +143,12 @@ function render2DApp() {
           </button>
 
           <!-- Active Role Switcher Pill -->
-          <button class="btn btn-outline" id="btn-role-switcher" style="padding: 0.35rem 0.75rem; font-size: 0.75rem; border-radius: var(--radius-full); display: flex; align-items: center; gap: 0.4rem;">
+          <button class="btn btn-outline" id="btn-role-switcher" style="padding: 0.35rem 0.65rem; font-size: 0.74rem; border-radius: var(--radius-full); display: flex; align-items: center; gap: 0.35rem;">
             ${currentUser.role === 'admin' ? ICONS.shield : ICONS.user}
-            <span style="font-weight: 700; max-width: 130px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-              ${currentUser.role === 'admin' ? 'Administrador' : currentUser.fullName.split(' ')[0]}
+            <span style="font-weight: 700; max-width: 95px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+              ${currentUser.role === 'admin' ? (currentUser.id === 'ADMIN-DIEGO' ? 'Diego (Admin)' : 'María (Admin)') : currentUser.fullName.split(' ')[0]}
             </span>
-            <span style="font-size: 0.65rem; color: #6A635E;">▼</span>
+            <span style="font-size: 0.62rem; color: #6A635E;">▼</span>
           </button>
         </div>
       </div>

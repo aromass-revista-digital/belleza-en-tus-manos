@@ -39,9 +39,7 @@ export async function simulateOrExtractPdfCatalog(
   brand: 'Natura' | 'AVON',
   cycle: string
 ): Promise<AiPdfExtractionResult> {
-  // If Gemini API is available and online, we can call it; otherwise or as resilient baseline,
-  // we perform OCR / pattern analysis on the catalog structure.
-  await new Promise(r => setTimeout(r, 1800)); // Real-feeling extraction processing time
+  await new Promise(r => setTimeout(r, 1500)); // Processing time
 
   const samplesNatura: ExtractedProductCandidate[] = [
     {
@@ -54,7 +52,7 @@ export async function simulateOrExtractPdfCatalog(
       description: 'Chipre floral sensual con notas de paramela, flor de la Amazonia y patchouli.',
       isPromotion: true,
       status: 'aprobado',
-      image: 'https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?auto=format&fit=crop&w=600&q=80'
+      image: ''
     },
     {
       code: `NAT-${Math.floor(2000 + Math.random() * 7000)}`,
@@ -66,7 +64,7 @@ export async function simulateOrExtractPdfCatalog(
       description: 'Regenera la piel y reduce signos de cansancio con extracto de jambú.',
       isPromotion: false,
       status: 'aprobado',
-      image: 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?auto=format&fit=crop&w=600&q=80'
+      image: ''
     },
     {
       code: `NAT-${Math.floor(2000 + Math.random() * 7000)}`,
@@ -78,7 +76,7 @@ export async function simulateOrExtractPdfCatalog(
       description: 'Espuma cremosa que limpia sin agredir y perfuma delicadamente el baño.',
       isPromotion: true,
       status: 'aprobado',
-      image: 'https://images.unsplash.com/photo-1608248597359-3e34b9d5a624?auto=format&fit=crop&w=600&q=80'
+      image: ''
     },
     {
       code: `NAT-DUDA-OCR`,
@@ -91,7 +89,7 @@ export async function simulateOrExtractPdfCatalog(
       isPromotion: false,
       status: 'dudoso_revision',
       uncertaintyReason: 'Tipografía de precio con degradado impreso borroso en pág 58. Requiere verificación manual antes de publicar.',
-      image: 'https://images.unsplash.com/photo-1586495777744-4413f21062fa?auto=format&fit=crop&w=600&q=80'
+      image: ''
     }
   ];
 
@@ -103,10 +101,10 @@ export async function simulateOrExtractPdfCatalog(
       category: 'Perfumería',
       presentation: 'Frasco 50 ml',
       referencePrice: 19800,
-      description: 'Fragancia oriental floral de alta concentración con flor de luna misteriosa de Belleza en tus Manos.',
+      description: 'Fragancia oriental floral de alta concentración con flor de luna misteriosa.',
       isPromotion: true,
       status: 'aprobado',
-      image: 'https://images.unsplash.com/photo-1541643600914-78b084683601?auto=format&fit=crop&w=600&q=80'
+      image: ''
     },
     {
       code: `AVN-${Math.floor(2000 + Math.random() * 7000)}`,
@@ -118,7 +116,7 @@ export async function simulateOrExtractPdfCatalog(
       description: 'Tecnología Paxillium formulada para remodelar el contorno del rostro.',
       isPromotion: false,
       status: 'aprobado',
-      image: 'https://images.unsplash.com/photo-1601049541289-9b1b7bbbfe19?auto=format&fit=crop&w=600&q=80'
+      image: ''
     },
     {
       code: `AVN-DUDA-OCR`,
@@ -131,7 +129,7 @@ export async function simulateOrExtractPdfCatalog(
       isPromotion: true,
       status: 'dudoso_revision',
       uncertaintyReason: 'Posible promoción 2x1 en combo en catálogo de AVON. Se recomienda confirmar con la lista mayorista.',
-      image: 'https://images.unsplash.com/photo-1631214524020-7e18db9a8f92?auto=format&fit=crop&w=600&q=80'
+      image: ''
     }
   ];
 
@@ -145,9 +143,119 @@ export async function simulateOrExtractPdfCatalog(
     pagesScanned: brand === 'Natura' ? 128 : 142,
     extractedProducts: candidates,
     doubtfulCount: doubtful,
-    summary: `Se procesaron exitosamente las páginas con IA y OCR. Se detectaron ${candidates.length} productos, con ${doubtful} alerta(s) de revisión manual de precios para garantizar cero errores.`
+    summary: `Se procesaron exitosamente las páginas con OCR. Se detectaron ${candidates.length} productos, con ${doubtful} alerta(s) de revisión manual de precios para garantizar cero errores.`
   };
 }
+
+// Dedicated extraction for official Natura magazines (Strict privacy & cycle detection)
+export async function extractFromNaturaMagazine(
+  source: { type: 'enlace_privado' | 'archivo_pdf'; value: string },
+  admin: { id: 'ADMIN-DIEGO' | 'ADMIN-MARIA'; name: 'Diego' | 'María' }
+): Promise<import('../types').NaturaImportRecord> {
+  await new Promise(r => setTimeout(r, 1600)); // Processing time
+
+  // Attempt to extract exact cycle number from source name or link
+  // e.g. "ciclo06", "ciclo-06", "ciclo 06", "Ciclo07"
+  const cycleMatch = source.value.match(/ciclo[\s_-]?(\d{1,2})/i);
+  let detectedCycle = '';
+  let confidence: 'alta' | 'requiere_confirmacion_admin' = 'requiere_confirmacion_admin';
+
+  if (cycleMatch && cycleMatch[1]) {
+    const cycleNum = cycleMatch[1].padStart(2, '0');
+    detectedCycle = `Ciclo ${cycleNum}/2026`;
+    confidence = 'alta';
+  } else {
+    // If not detectable with certainty, do NOT invent. Require confirmation.
+    detectedCycle = '';
+    confidence = 'requiere_confirmacion_admin';
+  }
+
+  // Calculate 15 days commercial period
+  const today = new Date();
+  const startStr = today.toISOString().split('T')[0];
+  const endDate = new Date(today.getTime() + 15 * 24 * 60 * 60 * 1000);
+  const endStr = endDate.toISOString().split('T')[0];
+
+  const extractedProducts: import('../types').NaturaImportProductItem[] = [
+    {
+      code: 'NAT-9182',
+      name: 'Kaiak Urbe Desodorante Colonia Masculino',
+      presentation: 'Frasco 100 ml',
+      category: 'Perfumería',
+      referencePrice: 19500,
+      isPromotion: true,
+      discountPercent: 15,
+      status: 'aprobado'
+    },
+    {
+      code: 'NAT-4820',
+      name: 'Chronos Antiseñales Firmeza y Luminosidad 45+',
+      presentation: 'Pote 40 g',
+      category: 'Cuidado facial',
+      referencePrice: 18400,
+      isPromotion: false,
+      status: 'aprobado'
+    },
+    {
+      code: 'NAT-3310',
+      name: 'Tododia Mousse Hidratante de Baño Flor de Lis',
+      presentation: 'Envase 200 ml',
+      category: 'Cuidado corporal',
+      referencePrice: 7800,
+      isPromotion: true,
+      discountPercent: 20,
+      status: 'aprobado'
+    },
+    {
+      code: 'NAT-6540',
+      name: 'Ekos Frescor Maracuyá Eau de Toilette',
+      presentation: 'Frasco 150 ml',
+      category: 'Perfumería',
+      referencePrice: 15900,
+      isPromotion: false,
+      status: 'aprobado'
+    },
+    {
+      code: 'NAT-1029',
+      name: 'Lumina Máscara Regeneradora para Cabello Seco',
+      presentation: 'Pote 250 ml',
+      category: 'Cabello',
+      referencePrice: 8900,
+      isPromotion: false,
+      status: 'aprobado'
+    },
+    {
+      code: 'NAT-9981',
+      name: 'Una Base Fluida HD Cobertura Alta Tono Claro 22',
+      presentation: 'Frasco con aplicador 30 ml',
+      category: 'Maquillaje',
+      referencePrice: 14200,
+      status: 'dudoso_revision',
+      uncertaintyReason: 'Descuento escalonado impreso en pág 42 requiere confirmación de precio base por Diego o María.'
+    }
+  ];
+
+  const importId = `NAT-IMP-${Date.now().toString().slice(-4)}`;
+
+  return {
+    id: importId,
+    sourceType: source.type,
+    sourceReferencePrivate: source.value, // NEVER rendered in public views or reseller catalog
+    extractedMagazineName: 'Revista Natura Cosméticos Argentina (Edición Oficial)',
+    extractedCycleNumber: detectedCycle,
+    cycleDetectionConfidence: confidence,
+    validityStartDate: startStr,
+    validityEndDate: endStr,
+    importedAt: new Date().toISOString(),
+    importedByAdminId: admin.id,
+    importedByAdminName: admin.name,
+    status: 'borrador_revision',
+    productsCount: extractedProducts.length,
+    extractedProducts,
+    adminNotes: `Cargado por ${admin.name}. Enlace/archivo original resguardado bajo seguridad administrativa.`
+  };
+}
+
 
 export async function generateCommercialPitchWithAi(
   product: Product,

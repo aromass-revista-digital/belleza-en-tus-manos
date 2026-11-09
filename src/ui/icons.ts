@@ -77,5 +77,12 @@ export const ICONS = {
   qr: `<svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
     <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
     <rect x="14" y="14" width="3" height="3"/><rect x="18" y="18" width="3" height="3"/>
+  </svg>`,
+
+  cosmetics: `<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#D4AF37" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M9 3h6v4H9z"/><path d="M10 2h4v1h-4z"/>
+    <path d="M7 7h10l1.5 12a2 2 0 0 1-2 2h-9a2 2 0 0 1-2-2L7 7z"/>
+    <circle cx="12" cy="14" r="2.5" fill="#E8C5C8" stroke="#D97A85"/>
   </svg>`
 };
+

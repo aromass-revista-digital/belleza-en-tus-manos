@@ -1,19 +1,16 @@
-const CACHE_NAME = 'belleza-en-tus-manos-v1';
-const ASSETS_TO_CACHE = [
+const CACHE_NAME = 'belleza-en-tus-manos-v2';
+const CORE_ASSETS = [
   '/',
   '/index.html',
   '/manifest.json',
-  '/public/icon.svg',
-  '/icon.svg',
-  '/src/index.css',
-  '/src/index.ts'
+  '/icon.svg'
 ];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS_TO_CACHE).catch((err) => {
-        console.warn('Pre-cache partial failure:', err);
+      return cache.addAll(CORE_ASSETS).catch((err) => {
+        console.warn('Pre-cache warning (non-fatal):', err);
       });
     }).then(() => self.skipWaiting())
   );
@@ -37,24 +34,28 @@ self.addEventListener('fetch', (event) => {
   // Only handle GET requests
   if (event.request.method !== 'GET') return;
 
-  // Stale-while-revalidate for local assets, network-first for others
-  event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
-      if (cachedResponse) {
-        // Fetch background update
-        fetch(event.request).then((networkResponse) => {
-          if (networkResponse && networkResponse.status === 200) {
-            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, networkResponse));
-          }
-        }).catch(() => {});
-        return cachedResponse;
-      }
-      return fetch(event.request).catch(() => {
-        // Fallback for navigation requests
-        if (event.request.mode === 'navigate') {
-          return caches.match('/index.html');
-        }
-      });
-    })
-  );
+  // Stale-while-revalidate for local origin assets
+  const url = new URL(event.request.url);
+  if (url.origin === location.origin) {
+    event.respondWith(
+      caches.match(event.request).then((cachedResponse) => {
+        const fetchPromise = fetch(event.request)
+          .then((networkResponse) => {
+            if (networkResponse && networkResponse.status === 200) {
+              const clone = networkResponse.clone();
+              caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+            }
+            return networkResponse;
+          })
+          .catch(() => {
+            // Fallback for navigation requests when offline
+            if (event.request.mode === 'navigate') {
+              return caches.match('/index.html') || caches.match('/');
+            }
+          });
+
+        return cachedResponse || fetchPromise;
+      })
+    );
+  }
 });

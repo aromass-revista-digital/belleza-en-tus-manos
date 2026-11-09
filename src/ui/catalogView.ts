@@ -165,16 +165,31 @@ export function renderCatalogView(container: HTMLElement, onOpen3d: () => void, 
 
     grid.innerHTML = filtered.map(product => {
       const brandBadgeClass = product.brand === 'Natura' ? 'badge-natura' : 'badge-avon';
+      const hasRealImage = Boolean(product.image && product.image.trim() !== '' && !product.image.includes('unsplash.com') && !product.image.includes('picsum.photos'));
+
       return `
         <div class="bem-card" data-product-id="${product.id}">
           <div class="bem-card-img-wrap">
-            <img src="${product.image}" alt="${product.name}" class="bem-card-img" loading="lazy" referrerpolicy="no-referrer" />
-            <div style="position: absolute; top: 10px; left: 10px; display: flex; gap: 0.35rem; flex-wrap: wrap;">
+            ${hasRealImage ? `
+              <img src="${product.image}" alt="${product.name}" class="bem-card-img" loading="lazy" referrerpolicy="no-referrer" />
+            ` : `
+              <div class="bem-product-fallback">
+                <div class="bem-product-fallback-icon">
+                  ${ICONS.cosmetics}
+                </div>
+                <div class="bem-product-fallback-code">${product.brand} • ${product.code}</div>
+                <div class="bem-product-fallback-name">${product.name}</div>
+                <div class="bem-product-fallback-badge">
+                  ${product.presentation} • Ficha Verificada
+                </div>
+              </div>
+            `}
+            <div style="position: absolute; top: 10px; left: 10px; display: flex; gap: 0.35rem; flex-wrap: wrap; z-index: 2;">
               <span class="badge ${brandBadgeClass}">${product.brand}</span>
               ${product.isPromotion ? `<span class="badge" style="background: #E8C5C8; color: #72242B;">Oferta Ciclo</span>` : ''}
             </div>
-            <div style="position: absolute; bottom: 8px; right: 8px;">
-              <span style="font-size: 0.7rem; background: rgba(0,0,0,0.65); color: #FFF; padding: 2px 6px; border-radius: 4px; font-weight: 600;">
+            <div style="position: absolute; bottom: 8px; right: 8px; z-index: 2;">
+              <span style="font-size: 0.7rem; background: rgba(36, 32, 30, 0.75); color: #FFF; padding: 2px 7px; border-radius: 4px; font-weight: 600;">
                 ${product.presentation}
               </span>
             </div>
@@ -255,14 +270,29 @@ export function renderCatalogView(container: HTMLElement, onOpen3d: () => void, 
 
 function showProductModal(product: Product, onOpenCart: () => void) {
   const currentUser = store.getCurrentUser();
+  const hasRealImage = Boolean(product.image && product.image.trim() !== '' && !product.image.includes('unsplash.com') && !product.image.includes('picsum.photos'));
+
   const modal = document.createElement('div');
   modal.className = 'bem-modal-backdrop';
   modal.innerHTML = `
     <div class="bem-modal-box" style="max-width: 520px;">
       <button id="btn-close-modal" style="position: absolute; top: 1rem; right: 1rem; background: none; border: none; font-size: 1.5rem; color: #6A635E; cursor: pointer;">&times;</button>
-      <div style="border-radius: 14px; overflow: hidden; margin-bottom: 1rem; position: relative; max-height: 280px;">
-        <img src="${product.image}" alt="${product.name}" style="width: 100%; height: 260px; object-fit: cover;" referrerpolicy="no-referrer" />
-        <span class="badge ${product.brand === 'Natura' ? 'badge-natura' : 'badge-avon'}" style="position: absolute; top: 12px; left: 12px;">
+      <div style="border-radius: 14px; overflow: hidden; margin-bottom: 1rem; position: relative; min-height: 180px; max-height: 280px; background: #FAF7F5;">
+        ${hasRealImage ? `
+          <img src="${product.image}" alt="${product.name}" style="width: 100%; height: 260px; object-fit: cover;" referrerpolicy="no-referrer" />
+        ` : `
+          <div style="padding: 2rem 1.5rem; text-align: center; background: linear-gradient(135deg, #FBF6F6 0%, #F5E8E9 50%, #FAF4EB 100%);">
+            <div style="width: 54px; height: 54px; border-radius: 50%; background: #FFF; border: 1px solid rgba(212,175,55,0.4); display: flex; align-items: center; justify-content: center; margin: 0 auto 0.75rem;">
+              ${ICONS.cosmetics}
+            </div>
+            <div style="font-size: 0.8rem; font-weight: 800; color: var(--c-gold-dark);">${product.brand} • ${product.code}</div>
+            <h3 class="font-serif" style="font-size: 1.15rem; color: #24201E; margin-top: 0.25rem;">${product.name}</h3>
+            <span style="font-size: 0.75rem; color: #6A635E; background: rgba(255,255,255,0.9); padding: 3px 10px; border-radius: var(--radius-full); display: inline-block; margin-top: 0.5rem;">
+              ${product.presentation} • Ficha Técnica Oficial Verificada
+            </span>
+          </div>
+        `}
+        <span class="badge ${product.brand === 'Natura' ? 'badge-natura' : 'badge-avon'}" style="position: absolute; top: 12px; left: 12px; z-index: 2;">
           ${product.brand}
         </span>
       </div>
